@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -46,7 +47,10 @@ const authController = new AuthController();
  *       409:
  *         description: E-mail já cadastrado
  */
-router.post("/register", authController.register);
+router.post(
+    "/register",
+    authController.register
+);
 
 /**
  * @swagger
@@ -78,6 +82,31 @@ router.post("/register", authController.register);
  *       401:
  *         description: E-mail ou senha inválidos
  */
-router.post("/login", authController.login);
+router.post(
+    "/login",
+    authController.login
+);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   get:
+ *     summary: Obter usuário autenticado
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados do usuário autenticado
+ *       401:
+ *         description: Token ausente, inválido ou expirado
+ *       400:
+ *         description: Usuário não autenticado
+ */
+router.get(
+    "/me",
+    authMiddleware,
+    authController.getCurrentUser
+);
 
 export default router;

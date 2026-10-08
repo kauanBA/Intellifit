@@ -28,6 +28,27 @@ export class UserRepository {
         return result.rows[0] ?? null;
     }
 
+    public async findById(
+        id: number
+    ): Promise<User | null> {
+
+        const result = await pool.query(
+            `
+        SELECT
+            id,
+            name,
+            email,
+            password,
+            role
+        FROM users
+        WHERE id = $1
+        `,
+            [id]
+        );
+
+        return result.rows[0] ?? null;
+    }
+
     public async create(
         name: string,
         email: string,

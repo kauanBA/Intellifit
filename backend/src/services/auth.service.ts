@@ -15,16 +15,16 @@ export class AuthService {
         password: string
     ) {
         if (!name || !email || !password) {
-        throw new Error(
-        "Nome, e-mail e senha são obrigatórios."
-    );
-    }
+            throw new Error(
+                "Nome, e-mail e senha são obrigatórios."
+            );
+        }
 
-    if (password.length < 6) {
-    throw new Error(
-        "A senha deve possuir pelo menos 6 caracteres."
-    );
-    }
+        if (password.length < 6) {
+            throw new Error(
+                "A senha deve possuir pelo menos 6 caracteres."
+            );
+        }
 
 
         const existingUser = await this.userRepository.findByEmail(email);
@@ -49,48 +49,69 @@ export class AuthService {
         };
     }
 
-    public async login(email: string, password: string) {
+    public async getCurrentUser(
+        userId: number
+    ) {
 
-    if (!email || !password) {
-    throw new Error(
-        "E-mail e senha são obrigatórios."
-    );
-    }
+        const user =
+            await this.userRepository.findById(userId);
 
-    const user = await this.userRepository.findByEmail(email);
-
-    if (!user) {
-        throw new Error("E-mail ou senha inválidos.");
-    }
-
-    const passwordMatch = await bcrypt.compare(
-        password,
-        user.password
-    );
-
-    if (!passwordMatch) {
-        throw new Error("E-mail ou senha inválidos.");
-    }
-
-    const token = jwt.sign(
-        {
-            userId: user.id,
-            role: user.role
-        },
-        process.env.JWT_SECRET as string,
-        {
-            expiresIn: "1d"
+        if (!user) {
+            throw new Error(
+                "Usuário não encontrado."
+            );
         }
-    );
 
-    return {
-        user: {
+        return {
             id: user.id,
             name: user.name,
             email: user.email,
             role: user.role
-        },
-        token
-    };
+        };
+    }
+
+    public async login(email: string, password: string) {
+
+        if (!email || !password) {
+            throw new Error(
+                "E-mail e senha são obrigatórios."
+            );
+        }
+
+        const user = await this.userRepository.findByEmail(email);
+
+        if (!user) {
+            throw new Error("E-mail ou senha inválidos.");
+        }
+
+        const passwordMatch = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!passwordMatch) {
+            throw new Error("E-mail ou senha inválidos.");
+        }
+
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                role: user.role
+            },
+            process.env.JWT_SECRET as string,
+            {
+                expiresIn: "1d"
+            }
+        );
+
+        return {
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            },
+            token
+        };
     }
 }

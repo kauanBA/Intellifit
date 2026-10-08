@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthRequest } from "../middlewares/auth.middleware";
 import { AuthService } from "../services/auth.service";
 
 export class AuthController {
@@ -28,19 +29,45 @@ export class AuthController {
         }
     };
 
+    public getCurrentUser = async (
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> => {
+
+        try {
+
+            if (!req.userId) {
+                throw new Error(
+                    "Usuário não autenticado."
+                );
+            }
+
+            const user =
+                await this.authService.getCurrentUser(
+                    req.userId
+                );
+
+            res.json(user);
+
+        } catch (error) {
+            next(error);
+        }
+    };
+
     public login = async (
-    req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const { email, password } = req.body;
+        req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { email, password } = req.body;
 
-        const result = await this.authService.login(
-            email,
-            password
-        );
+            const result = await this.authService.login(
+                email,
+                password
+            );
 
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
     };
 }

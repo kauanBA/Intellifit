@@ -1,6 +1,23 @@
+
 import { FoodRepository } from "../repositories/food.repository";
 import { Food } from "../interfaces/food.interface";
 import { CreateFood } from "../interfaces/create-food.interface";
+
+/*
+   SERVIÇO DE ALIMENTOS
+
+   Centraliza as regras de negócio relacionadas aos alimentos.
+
+   A FoodService recebe as solicitações das rotas e utiliza o
+   FoodRepository para acessar os dados no banco de dados.
+
+   Além de realizar as operações de cadastro, consulta,
+   atualização e exclusão, este serviço também valida os dados
+   recebidos e calcula o status de validade dos alimentos.
+
+   As operações utilizam o userId para garantir que os dados
+   sejam relacionados ao usuário autenticado.
+*/
 
 export class FoodService {
 
@@ -13,6 +30,21 @@ export class FoodService {
     public async getAllFoods(userId: number): Promise<Food[]> {
         return await this.foodRepository.findAllByUserId(userId);
     }
+
+/*
+   CADASTRO E VALIDAÇÃO
+
+   Valida os dados do alimento antes de enviá-los ao banco
+   de dados.
+
+   São verificados:
+   - Preenchimento dos campos obrigatórios.
+   - Quantidade maior que zero.
+   - Existência da data de validade.
+
+   Após todas as validações, o userId é associado ao alimento
+   e os dados são enviados ao FoodRepository para persistência.
+*/
 
     public async createFood(
         userId: number,
@@ -48,6 +80,19 @@ export class FoodService {
         });
     }
 
+/*
+   BUSCAR ALIMENTO POR ID
+
+   Consulta um alimento específico utilizando seu ID e o
+   userId do usuário autenticado.
+
+   O userId é utilizado junto ao ID para garantir que o alimento
+   pertence ao usuário que realizou a requisição.
+
+   Caso o alimento não seja encontrado ou não pertença ao
+   usuário, a operação retorna um erro.
+*/
+
     public async getFoodById(
         id: number,
         userId: number
@@ -66,6 +111,24 @@ export class FoodService {
 
         return food;
     }
+
+/*
+   ATUALIZAÇÃO E VALIDAÇÃO
+
+   Valida os novos dados do alimento antes de realizar
+   a atualização no banco de dados.
+
+   São verificadas as mesmas regras utilizadas no cadastro,
+   como preenchimento dos campos obrigatórios, quantidade
+   maior que zero e existência da data de validade.
+
+   O ID e o userId são utilizados para garantir que somente
+   um alimento pertencente ao usuário autenticado seja
+   atualizado.
+
+   Caso o alimento não seja encontrado, a atualização é
+   interrompida e um erro é retornado.
+*/
 
     public async updateFood(
         id: number,
@@ -112,6 +175,19 @@ export class FoodService {
         return updatedFood;
     }
 
+/*
+   EXCLUSÃO DE ALIMENTO
+
+   Remove um alimento do banco de dados utilizando seu ID
+   e o userId do usuário autenticado.
+
+   O userId garante que a operação seja realizada somente
+   sobre alimentos pertencentes ao usuário.
+
+   Caso nenhum alimento seja encontrado para os dados
+   informados, a exclusão é interrompida e um erro é retornado.
+*/
+
     public async deleteFood(
         id: number,
         userId: number
@@ -129,6 +205,24 @@ export class FoodService {
             );
         }
     }
+
+/*
+   CONTROLE DE VALIDADE
+
+   Busca os alimentos do usuário e calcula quantos dias faltam
+   para a data de vencimento de cada um.
+
+   A partir dessa diferença, cada alimento recebe um status:
+
+   - EXPIRED: alimento já está vencido.
+   - TODAY: alimento vence no dia atual.
+   - ATTENTION: alimento ainda não venceu, mas deve ser
+     acompanhado pelo usuário.
+
+   As informações calculadas são adicionadas aos dados originais
+   e retornadas para o frontend, permitindo a exibição de
+   alertas e indicadores de validade no sistema.
+*/
 
     public async getExpiringFoods(
         userId: number

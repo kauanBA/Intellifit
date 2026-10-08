@@ -4,8 +4,12 @@ import { errorMiddleware } from "./middlewares/error.middleware";
 import authRoutes from "./routes/auth.routes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import recipeRoutes from "./routes/recipe.routes";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -23,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/foods", foodRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/recipes", recipeRoutes);
 
 app.use(errorMiddleware);
 

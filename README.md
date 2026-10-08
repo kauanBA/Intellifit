@@ -20,6 +20,7 @@ Plataforma web para gerenciamento de alimentos domésticos, permitindo organizar
 * JWT
 * bcrypt
 * Swagger / OpenAPI
+* TheMealDB API
 
 ## Estrutura do projeto
 
@@ -113,6 +114,7 @@ Dentro da pasta `backend`:
 ```bash
 npm run dev
 ```
+Mantenha dois terminais abertos rodando backend e frontend simultaneamente!
 
 O servidor será executado em:
 
@@ -145,8 +147,20 @@ npm install
 ```bash
 npm run dev
 ```
+Mantenha dois terminais abertos rodando backend e frontend simultaneamente!
 
 O Vite exibirá no terminal o endereço local para acessar a aplicação.
+
+## Receitas
+
+O módulo de receitas utiliza a API pública TheMealDB para buscar
+sugestões e detalhes de receitas.
+
+As sugestões são geradas com base nos alimentos cadastrados
+pelo usuário.
+
+A aplicação utiliza o backend como intermediário para realizar
+as requisições à API externa.
 
 ## Segurança
 
@@ -191,7 +205,7 @@ cd ../frontend
 npm install
 ```
 
-Configure o PostgreSQL, execute `backend/database.sql`, crie o arquivo `backend/.env` e então execute o backend e o frontend.
+Configure o PostgreSQL/pgAdmin, depois, execute o script SQL presente em: `backend/database.sql`, crie o arquivo `backend/.env` e então execute o backend e o frontend.
 
 ## Status
 
