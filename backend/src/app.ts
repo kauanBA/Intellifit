@@ -6,6 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
 import recipeRoutes from "./routes/recipe.routes";
 import cors from "cors";
+import chatRoutes from "./chat/routes";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/foods", foodRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.use(errorMiddleware);
 
